@@ -13,7 +13,7 @@
         <div class="container">
             <a class="navbar-brand fw-bold" href="/">🛍️ One Stop Shop</a>
             <div class="d-flex align-items-center gap-2 ms-auto">
-                <a href="/" class="btn btn-outline-light">← Back home</a>
+                <a href="/" class="btn btn-outline-light">← Back Home</a>
                 <a href="/view_cart" class="btn btn-success">View Cart <span class="badge bg-light text-dark ms-2">{{cart_count}}</span></a>
             </div>
         </div>
@@ -48,12 +48,12 @@
     <div class="container my-5">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="section-heading mb-0">Available Products</h2>
-            <span class="stat-badge">{{ products|length }} items</span>
+            <span class="stat-badge">{{ products|length }} item(s)</span>
         </div>
         {%if products%}
             <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-4">
                 {%for product in products%}
-                    <div class="product-card">
+                    <div class="product-card m-2">
                         <div class="card-image-wrap">
                             <img src="{{product['link']}}" alt="{{product['name']}}">
                         </div>
@@ -62,13 +62,13 @@
                             <p class="text-muted mb-3">{{product["description"]}}</p>
                             <h5 class="fw-bold">${{product["price"]}}</h5>
                             {% if product["quantity"] > 0 %}
-                                <p class="text-success mb-3"><strong>{{product["quantity"]}} in stock</strong></p>
+                                <p class="text-success mb-3"><strong>{{product["quantity"]}} left in stock</strong></p>
                                 <form action="/add_cart_shop/{{product['_id']}}/{{email}}" method="post" class="row g-2 align-items-center">
                                     <div class="col-6">
-                                        <input name="quantity" type="number" min="1" max="{{ product['quantity'] }}" class="form-control" placeholder="Qty" required>
+                                        <input name="quantity" type="number" min="1" max="{{ product['quantity'] }}" class="form-control" placeholder="Quantity" required>
                                     </div>
                                     <div class="col-6">
-                                        <button type="submit" class="btn btn-success w-100">Add</button>
+                                        <button type="submit" class="btn btn-success w-100">Add to Cart</button>
                                     </div>
                                 </form>
                             {% else %}

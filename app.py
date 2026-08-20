@@ -11,6 +11,7 @@ app.config["MONGO_URI"] = os.getenv("MONGOURI", "mongodb://localhost:27017/one_s
 app.config["SECRET_KEY"] = os.getenv("SECRETKEY", "dev-secret-key")
 client = MongoClient(app.config["MONGO_URI"])
 db = client.one_stop_shop
+db.Products.create_index([("name", "text"), ("description", "text")])
 
 def get_cart():
     if "user_id" not in session:
@@ -50,17 +51,17 @@ def index():
         products = list(db.Products.find(query).sort("name", 1))
         shops = list(db.Shops.find().sort("shop_name", 1))
         return render_template("index.html", 
-                             shops=shops, 
-                             products=products, 
-                             cart_count=get_cart_count(),
-                             search_query=search_query,
-                             shop_filter=shop_filter)
+                             shops = shops, 
+                             products = products, 
+                             cart_count = get_cart_count(),
+                             search_query = search_query,
+                             shop_filter = shop_filter)
     except Exception as e:
         print(f"Search error: {e}")
         return render_template("index.html", 
-                             shops=list(db.Shops.find().sort("shop_name", 1)), 
-                             products=list(db.Products.find().sort("name", 1)), 
-                             cart_count=get_cart_count())
+                             shops = list(db.Shops.find().sort("shop_name", 1)), 
+                             products = list(db.Products.find().sort("name", 1)), 
+                             cart_count = get_cart_count())
 
 @app.route("/register", methods = ["GET", "POST"])
 def register():
@@ -135,7 +136,7 @@ def add_product():
     if request.form.get("form_id") == "add_product_form":
         name = request.form.get("name", "").strip()
         description = request.form.get("description", "").strip()
-        price = safe_int(request.form.get("price"), 0)
+        price = float(request.form.get("price"))
         quantity = safe_int(request.form.get("quantity"), 0)
         image_link = request.form.get("link", "").strip()
         if not all([name, description, image_link]):

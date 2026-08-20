@@ -323,5 +323,5 @@ def checkout():
         flash("An error occurred during checkout. Please try again.")
     return redirect("/")
 
-# if __name__ == "__main__":
-#     app.run(debug = True)
+if __name__ == "__main__":
+    app.run(debug = True)

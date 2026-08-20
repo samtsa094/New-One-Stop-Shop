@@ -39,7 +39,7 @@
         {% endif %}
     {% endwith %}
 
-    <div class="container my-4">
+    <div class="container mt-4 mb-5">
         <div class="hero-section text-white p-4 p-md-5">
             <div class="row align-items-center g-4">
                 <div class="col-lg-8">
@@ -50,38 +50,6 @@
                 <div class="col-lg-4 text-lg-end">
                     <a href="#products" class="btn btn-light btn-lg px-4">Browse products</a>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Search & Filter Section -->
-    <div class="container my-4">
-        <div class="card border-0 shadow-sm">
-            <div class="card-body">
-                <h5 class="card-title mb-4">Search & Filter</h5>
-                <form method="GET" action="/" class="row g-3">
-                    <div class="col-md-6">
-                        <input type="text" name="search" class="form-control" placeholder="Search products..." value="{{ search_query }}">
-                    </div>
-                    <div class="col-md-4">
-                        <select name="shop" class="form-select">
-                            <option value="">All Shops</option>
-                            {% for shop in shops %}
-                                <option value="{{ shop['email'] }}" {% if shop['email'] == shop_filter %}selected{% endif %}>
-                                    {{ shop['shop_name'] }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="col-md-2">
-                        <button type="submit" class="btn btn-primary w-100">Search</button>
-                    </div>
-                </form>
-                {% if search_query or shop_filter %}
-                    <div class="mt-2">
-                        <a href="/" class="btn btn-outline-secondary btn-sm">Clear Filters</a>
-                    </div>
-                {% endif %}
             </div>
         </div>
     </div>
@@ -159,7 +127,39 @@
         {%endif%}
     </div>
 
-    <div id="products" class="container my-5">
+    <!-- Search & Filter Section -->
+    <div class="container mb-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title mb-4">Search & Filter</h5>
+                <form method="GET" action="/" class="row g-3">
+                    <div class="col-md-6">
+                        <input type="text" name="search" class="form-control" placeholder="Search products..." value="{{ search_query }}">
+                    </div>
+                    <div class="col-md-4">
+                        <select name="shop" class="form-select">
+                            <option value="">All Shops</option>
+                            {% for shop in shops %}
+                                <option value="{{ shop['email'] }}" {% if shop['email'] == shop_filter %}selected{% endif %}>
+                                    {{ shop['shop_name'] }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100">Search</button>
+                    </div>
+                </form>
+                {% if search_query or shop_filter %}
+                    <div class="mt-2">
+                        <a href="/" class="btn btn-outline-secondary btn-sm">Clear Filters</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div id="products" class="container">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="section-heading mb-0">All products</h2>
             <span class="stat-badge">{{ products|length }} product(s)</span>

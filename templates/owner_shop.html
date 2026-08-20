@@ -37,7 +37,7 @@
             <div class="row align-items-center">
                 <div class="col-md-8">
                     <span class="badge bg-light text-primary mb-3">Owner dashboard</span>
-                    <h1 class="display-6 fw-bold mb-2">Welcome back, {{name}}</h1>
+                    <h1 class="display-6 fw-bold mb-2">Welcome back, {{name.split()[0]}}!</h1>
                     <p class="mb-0 fs-5">Manage your stock, add new products, and keep your store organized.</p>
                 </div>
                 <div class="col-md-4 text-md-end">
@@ -61,7 +61,7 @@
                         <div class="mb-3"><input name="description" type="text" class="form-control" placeholder="Description" required></div>
                         <div class="input-group mb-3">
                             <span class="input-group-text">$</span>
-                            <input name="price" type="number" min="1" class="form-control" placeholder="Unit price" required>
+                            <input name="price" step="any" class="form-control" placeholder="Unit price" required>
                         </div>
                         <div class="mb-3"><input name="quantity" type="number" min="1" class="form-control" placeholder="Quantity" required></div>
                         <div class="mb-3"><input name="link" type="text" class="form-control" placeholder="Image link" required></div>
@@ -78,12 +78,12 @@
     <div class="container my-5">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="section-heading mb-0">Stock available</h2>
-            <span class="stat-badge">{{ products|length }} products</span>
+            <span class="stat-badge">{{ products|length }} product(s)</span>
         </div>
         {%if products%}
             <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-4">
                 {%for product in products%}
-                    <div class="product-card">
+                    <div class="product-card m-2">
                         <div class="card-header text-end bg-white border-0 p-3">
                             <a href="/delete/{{product['_id']}}" class="btn btn-sm btn-danger">Delete</a>
                         </div>
@@ -94,13 +94,13 @@
                             <h3 class="card-title mb-2">{{product["name"]}}</h3>
                             <p class="text-muted mb-3">{{product["description"]}}</p>
                             <h5 class="fw-bold">${{product["price"]}}</h5>
-                            <p class="text-secondary mb-3">{{product["quantity"]}} in stock</p>
+                            <p class="text-secondary mb-3">{{product["quantity"]}} left in stock</p>
                             <form action="/add_stock/{{product['_id']}}" method="post" class="row g-2 align-items-center">
                                 <div class="col-6">
-                                    <input name="quantity" type="number" min="1" class="form-control" placeholder="Qty" required>
+                                    <input name="quantity" type="number" min="1" class="form-control" placeholder="Quantity" required>
                                 </div>
                                 <div class="col-6">
-                                    <button type="submit" class="btn btn-success w-100">Add stock</button>
+                                    <button type="submit" class="btn btn-success w-100">Add Stock</button>
                                 </div>
                             </form>
                         </div>

@@ -44,7 +44,7 @@
             <div class="row align-items-center g-4">
                 <div class="col-lg-8">
                     <span class="badge bg-light text-primary mb-3">Fresh picks for your home</span>
-                    <h1 class="display-6 fw-bold mb-3">Shop local favourites in one place.</h1>
+                    <h1 class="display-6 fw-bold mb-3">Shop local favorites in one place.</h1>
                     <p class="mb-0 fs-5">Find trusted stores, compare products, and build your cart without leaving the page.</p>
                 </div>
                 <div class="col-lg-4 text-lg-end">
@@ -133,15 +133,15 @@
         </div>
     </div>
 
-    <div class="container my-5">
+    <div class="container mb-5">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="section-heading mb-0">Featured shops</h2>
-            <span class="stat-badge">{{ shops|length }} stores</span>
+            <span class="stat-badge">{{ shops|length }} store(s)</span>
         </div>
         {%if shops%}
             <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-4">
                 {%for shop in shops%}
-                    <div class="shop-card">
+                    <div class="shop-card m-2">
                         <div class="card-body text-center">
                             <h5 class="text-primary fw-bold mb-1">{{shop["owner_name"]}}'s Store</h5>
                             <h3 class="card-title mt-3">{{shop["shop_name"]}}</h3>
@@ -162,12 +162,12 @@
     <div id="products" class="container my-5">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="section-heading mb-0">All products</h2>
-            <span class="stat-badge">{{ products|length }} products</span>
+            <span class="stat-badge">{{ products|length }} product(s)</span>
         </div>
         {%if products%}
             <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-4">
                 {%for product in products%}
-                    <div class="product-card">
+                    <div class="product-card m-2">
                         <div class="card-image-wrap">
                             <img src="{{product['link']}}" alt="{{product['name']}}">
                         </div>
@@ -179,10 +179,10 @@
                                 <p class="text-success mb-3"><strong>{{product["quantity"]}} in stock</strong></p>
                                 <form action="/add_cart_home/{{product['_id']}}" method="post" class="row g-2 align-items-center">
                                     <div class="col-6">
-                                        <input name="quantity" type="number" min="1" max="{{ product['quantity'] }}" class="form-control" placeholder="Qty" required>
+                                        <input name="quantity" type="number" min="1" max="{{ product['quantity'] }}" class="form-control" placeholder="Quantity" required>
                                     </div>
                                     <div class="col-6">
-                                        <button type="submit" class="btn btn-success w-100">Add</button>
+                                        <button type="submit" class="btn btn-success w-100">Add to Cart</button>
                                     </div>
                                 </form>
                             {% else %}

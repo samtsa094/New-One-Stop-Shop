@@ -6,3 +6,4 @@ djangorestframework>=3.14
 django-cors-headers>=4.0
 whitenoise>=6.0
 gunicorn>=21.0
+Flask>=3.0

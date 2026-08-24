@@ -36,7 +36,7 @@
                 <div class="col-md-8">
                     <span class="badge bg-light text-primary mb-3">Local store</span>
                     <h1 class="display-6 fw-bold mb-2">{{shop.shop_name}}</h1>
-                    <p class="mb-0 fs-5">Owner: <strong>{{shop.owner_name}}</strong> • Phone: <strong>{{shop.contact}}</strong></p>
+                    <p class="mb-0 fs-5">Owner: <strong>{{shop.owner_name}}</strong> • Phone Number: <strong>{{shop.contact}}</strong></p>
                 </div>
                 <div class="col-md-4 text-md-end">
                     <a href="/" class="btn btn-light btn-lg">Continue Shopping</a>
@@ -46,14 +46,14 @@
     </div>
 
     <div class="container my-5">
-        <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
             <h2 class="section-heading mb-0">Available Products</h2>
             <span class="stat-badge">{{ products|length }} item(s)</span>
         </div>
         {%if products%}
             <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-4">
                 {%for product in products%}
-                    <div class="product-card m-2">
+                    <div class="product-card">
                         <div class="card-image-wrap">
                             <img src="{{product['link']}}" alt="{{product['name']}}">
                         </div>

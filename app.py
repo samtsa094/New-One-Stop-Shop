@@ -4,6 +4,7 @@ from bson import ObjectId
 from passlib.hash import sha256_crypt
 from dotenv import load_dotenv
 import os
+from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 
 load_dotenv()
 app = Flask(__name__)
@@ -136,14 +137,19 @@ def add_product():
     if request.form.get("form_id") == "add_product_form":
         name = request.form.get("name", "").strip()
         description = request.form.get("description", "").strip()
-        price = float(request.form.get("price"))
+        price = request.form.get("price", "").strip()
         quantity = safe_int(request.form.get("quantity"), 0)
         image_link = request.form.get("link", "").strip()
         if not all([name, description, image_link]):
             flash("Please provide product name, description, and image link.")
             return redirect("/owner_shop")
-        if price <= 0:
-            flash("Price must be greater than $0.")
+        try:
+            price_value = Decimal(price).quantize(Decimal("0.01"), rounding = ROUND_HALF_UP)
+            price = f"{price_value:.2f}"
+        except (InvalidOperation, ValueError):
+            price_value = None
+        if price_value is None or price_value <= 0:
+            flash("Price must be a positive number.")
             return redirect("/owner_shop")
         if quantity <= 0:
             flash("Quantity must be at least 1.")
@@ -155,7 +161,7 @@ def add_product():
             db.Products.insert_one({
                 "name": name, 
                 "description": description, 
-                "price": price, 
+                "price": price_value, 
                 "quantity": quantity, 
                 "link": image_link, 
                 "email": session["email"]
@@ -323,5 +329,5 @@ def checkout():
         flash("An error occurred during checkout. Please try again.")
     return redirect("/")
 
-# if __name__ == "__main__":
-#     app.run(debug = True)
+if __name__ == "__main__":
+    app.run(debug = True)

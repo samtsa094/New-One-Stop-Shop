@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, flash, session
 from pymongo import MongoClient
 from bson import ObjectId
+from bson.decimal128 import Decimal128
 from passlib.hash import sha256_crypt
 from dotenv import load_dotenv
 import os
@@ -145,10 +146,10 @@ def add_product():
             return redirect("/owner_shop")
         try:
             price_value = Decimal(price).quantize(Decimal("0.01"), rounding = ROUND_HALF_UP)
-            price = f"{price_value:.2f}"
+            price_value = Decimal128(price_value)
         except (InvalidOperation, ValueError):
             price_value = None
-        if price_value is None or price_value <= 0:
+        if price_value is None or price_value.to_decimal() < 0:
             flash("Price must be a positive number.")
             return redirect("/owner_shop")
         if quantity <= 0:

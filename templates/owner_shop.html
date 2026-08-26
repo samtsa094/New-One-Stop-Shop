@@ -91,10 +91,18 @@
                             <img src="{{product['link']}}" alt="{{product['name']}}">
                         </div>
                         <div class="card-body text-center">
-                            <h3 class="card-title mb-2">{{product["name"]}}</h3>
-                            <p class="text-muted mb-3">{{product["description"]}}</p>
-                            <h5 class="fw-bold">${{product["price"]}}</h5>
-                            <p class="text-secondary mb-3">{{product["quantity"]}} left in stock</p>
+                            <h3 class="card-title mb-2">{{product['name']}}</h3>
+                            <p class="text-muted mb-3">{{product['description']}}</p>
+                            <h5 class="fw-bold">${{product['price']}}</h5>
+                            {% if product["quantity"] > 0 %}
+                                {% if product["quantity"] <= 5 %}
+                                    <p class="text-danger mb-3"><strong>Low stock: {{product["quantity"]}} left</strong></p>
+                                {% else %}
+                                    <p class="text-success mb-3"><strong>In stock: {{product["quantity"]}} left</strong></p>
+                                {% endif %}
+                            {% else %}
+                                <p class="text-danger mb-3"><strong>Out of stock</strong></p>
+                            {% endif %}
                             <form action="/add_stock/{{product['_id']}}" method="post" class="row g-2 align-items-center">
                                 <div class="col-6">
                                     <input name="quantity" type="number" min="1" class="form-control" placeholder="Quantity" required>

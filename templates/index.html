@@ -1,49 +1,33 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>One Stop Shop</title>
-    <link rel="stylesheet" href="/static/style.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-</head>
-<body>
+{% extends "base.html" %}
+{% block title %}One Stop Shop{% endblock %}
+{% block navbar %}
     <nav class="navbar navbar-expand-lg bg-dark mb-4" data-bs-theme="dark">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="/">🛍️ One Stop Shop</a>
+            <a class="navbar-brand fw-bold text-white" href="/">🛍️ One Stop Shop</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarText">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item"><a class="nav-link active" href="/">Home</a></li>
+                    <li class="nav-item"><a class="nav-link active text-white" href="/">Home</a></li>
                 </ul>
                 <div class="d-flex flex-wrap gap-2 align-items-center">
-                    <button type="button" class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#registerModal">Register</button>
-                    <button type="button" class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#loginModal">Login</button>
+                    <button type="button" class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#registerModal">Register</button>
+                    <button type="button" class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#loginModal">Login</button>
                     <a href="/view_cart" class="btn btn-success">View Cart <span class="badge bg-light text-dark ms-2">{{cart_count}}</span></a>
                 </div>
             </div>
         </div>
     </nav>
 
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-primary alert-dismissible fade show mx-4 mx-md-5" role="alert">
-                    {{message}}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
+{% endblock %}
+{% block content %}
 
     <div class="container mt-4 mb-5">
         <div class="hero-section text-white p-4 p-md-5">
             <div class="row align-items-center g-4">
                 <div class="col-lg-8">
-                    <span class="badge bg-light text-primary mb-3">Fresh picks for your home</span>
+                    <span class="badge bg-warning-subtle text-dark mb-3">Fresh picks for your home</span>
                     <h1 class="display-6 fw-bold mb-3">Shop local favorites in one place.</h1>
                     <p class="mb-0 fs-5">Find trusted stores, compare products, and build your cart without leaving the page.</p>
                 </div>
@@ -102,14 +86,14 @@
     </div>
 
     <div class="container mb-5">
-        <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="section-heading mb-0">Featured shops</h2>
             <span class="stat-badge">{{ shops|length }} store(s)</span>
         </div>
         {%if shops%}
             <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-4">
                 {%for shop in shops%}
-                    <div class="shop-card">
+                    <div class="shop-card mx-1 mt-3">
                         <div class="card-body text-center">
                             <h5 class="text-primary fw-bold mb-1">{{shop["owner_name"]}}'s Store</h5>
                             <h3 class="card-title mt-3">{{shop["shop_name"]}}</h3>
@@ -123,7 +107,7 @@
                 {%endfor%}
             </div>
         {%else%}
-            <div class="empty-state text-center">No shops available yet.</div>
+            <div class="empty-state text-center mt-3">No shops available yet.</div>
         {%endif%}
     </div>
 
@@ -134,7 +118,8 @@
                 <h5 class="card-title mb-4">Search & Filter</h5>
                 <form method="GET" action="/" class="row g-3">
                     <div class="col-md-6">
-                        <input type="text" name="search" class="form-control" placeholder="Search products..." value="{{ search_query }}">
+                        <label for="product-search" class="visually-hidden">Search products</label>
+                        <input id="product-search" type="search" name="search" class="form-control" placeholder="Search products..." value="{{ search_query }}">
                     </div>
                     <div class="col-md-4">
                         <select name="shop" class="form-select">
@@ -160,28 +145,27 @@
     </div>
 
     <div id="products" class="container">
-        <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="section-heading mb-0">All products</h2>
             <span class="stat-badge">{{ products|length }} product(s)</span>
         </div>
         {%if products%}
             <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-4">
                 {%for product in products%}
-                    <div class="product-card">
+                    <div class="product-card mx-1 mt-3">
                         <div class="card-image-wrap">
-                            <img src="{{product['link']}}" alt="{{product['name']}}">
+                            <img src="{{product['link']}}" alt="{{product['name']}}" loading="lazy" onerror="this.style.display='none'">
                         </div>
                         <div class="card-body text-center">
                             <h3 class="card-title mb-2">{{product["name"]}}</h3>
+                            <p class="large mb-2"><a href="{{ url_for('view_shop', email=product['email']) }}">{{ shop_names.get(product['email'], 'Local shop') }}</a></p>
                             <p class="text-muted mb-3">{{product["description"]}}</p>
-                            <h5 class="mt-2 fw-bold">${{product["price"]}}</h5>
+                            <h5 class="mt-2 fw-bold">${{ '%.2f'|format(product["price"]) }}</h5>
                             {% if product["quantity"] > 0 %}
-                                {% if product["quantity"] > 0 %}
-                                    {% if product["quantity"] <= 5 %}
-                                        <p class="text-danger mb-3"><strong>Low stock: {{product["quantity"]}} left</strong></p>
-                                    {% else %}
-                                        <p class="text-success mb-3"><strong>{{product["quantity"]}} in stock</strong></p>
-                                    {% endif %}
+                                {% if product["quantity"] <= 5 %}
+                                    <p class="text-danger mb-3"><strong>Low stock: {{product["quantity"]}} left</strong></p>
+                                {% else %}
+                                    <p class="text-success mb-3"><strong>{{product["quantity"]}} in stock</strong></p>
                                 {% endif %}
                                 <form action="/add_cart_home/{{product['_id']}}" method="post" class="row g-2 align-items-center">
                                     <div class="col-6">
@@ -200,13 +184,16 @@
                 {%endfor%}
             </div>
         {%else%}
-            <div class="empty-state text-center">No products available right now.</div>
+            <div class="empty-state text-center mt-3">
+                {% if search_query or shop_filter %}
+                    <h3>No matching products</h3>
+                    <p>Try a different search or clear the filters.</p>
+                    <a href="/" class="btn btn-outline-primary">Clear filters</a>
+                {% else %}
+                    <p class="mb-0">No products available right now.</p>
+                {% endif %}
+            </div>
         {%endif%}
     </div>
 
-    <footer class="bg-dark text-white text-center py-4 mt-5">
-        <p class="mb-1">&copy; 2026 One Stop Shop. All rights reserved.</p>
-        <p class="mb-0">Follow us on <a href="#" class="text-warning">Twitter</a> | <a href="#" class="text-warning">Facebook</a></p>
-    </footer>
-</body>
-</html>
+{% endblock %}

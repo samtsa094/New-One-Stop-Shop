@@ -4,8 +4,8 @@ from flask_pymongo import PyMongo
 from bson.objectid import ObjectId
 from passlib.hash import sha256_crypt
 app = Flask(__name__)
-app.config["MONGO_URI"] = "mongodb+srv://vaivai:1RJJ1JifgOc8VCos@cluster0.ualrt.mongodb.net/One-Stop-Shop"
-app.config["SECRET_KEY"] = "safe^&*hdgahksdg"
+app.config["MONGO_URI"] = os.getenv("MONGOURI", "mongodb://localhost:27017/one_stop_shop")
+app.config["SECRET_KEY"] = os.getenv("SECRETKEY") or os.urandom(32)
 mongo = PyMongo(app)
 @app.route("/", methods = ["GET", "POST"])
 def index():

@@ -1,40 +1,24 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{shop.shop_name}} | One Stop Shop</title>
-    <link rel="stylesheet" href="/static/style.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-</head>
-<body>
+{% extends "base.html" %}
+{% block title %}{{shop.shop_name}} | One Stop Shop{% endblock %}
+{% block navbar %}
     <nav class="navbar navbar-expand-lg bg-dark mb-4" data-bs-theme="dark">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="/">🛍️ One Stop Shop</a>
+            <a class="navbar-brand fw-bold text-white" href="/">🛍️ One Stop Shop</a>
             <div class="d-flex align-items-center gap-2 ms-auto">
-                <a href="/" class="btn btn-outline-light">← Back Home</a>
+                <a href="/" class="btn btn-outline-warning">← Back Home</a>
                 <a href="/view_cart" class="btn btn-success">View Cart <span class="badge bg-light text-dark ms-2">{{cart_count}}</span></a>
             </div>
         </div>
     </nav>
 
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-primary alert-dismissible fade show mx-4 mx-md-5" role="alert">
-                    {{message}}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
+{% endblock %}
+{% block content %}
 
     <div class="container mt-4">
         <div class="hero-section text-white p-4 p-md-5">
             <div class="row align-items-center">
                 <div class="col-md-8">
-                    <span class="badge bg-light text-primary mb-3">Local store</span>
+                    <span class="badge bg-warning-subtle text-dark mb-3">Local store</span>
                     <h1 class="display-6 fw-bold mb-2">{{shop.shop_name}}</h1>
                     <p class="mb-0 fs-5">Owner: <strong>{{shop.owner_name}}</strong> • Phone Number: <strong>{{shop.contact}}</strong></p>
                 </div>
@@ -45,22 +29,22 @@
         </div>
     </div>
 
-    <div class="container my-5">
-        <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="container mt-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="section-heading mb-0">Available Products</h2>
             <span class="stat-badge">{{ products|length }} item(s)</span>
         </div>
         {%if products%}
             <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-4">
                 {%for product in products%}
-                    <div class="product-card">
+                    <div class="product-card mx-1 mt-3">
                         <div class="card-image-wrap">
-                            <img src="{{product['link']}}" alt="{{product['name']}}">
+                            <img src="{{product['link']}}" alt="{{product['name']}}" loading="lazy" onerror="this.style.display='none'">
                         </div>
                         <div class="card-body text-center">
                             <h3 class="card-title mb-2">{{product["name"]}}</h3>
                             <p class="text-muted mb-3">{{product["description"]}}</p>
-                            <h5 class="fw-bold">${{product["price"]}}</h5>
+                            <h5 class="fw-bold">${{ '%.2f'|format(product["price"]) }}</h5>
                             {% if product["quantity"] > 0 %}
                                 {% if product["quantity"] <= 5 %}
                                     <p class="text-danger mb-3"><strong>Low stock: {{product["quantity"]}} left</strong></p>
@@ -69,7 +53,7 @@
                                 {% endif %}
                                 <form action="/add_cart_shop/{{product['_id']}}/{{email}}" method="post" class="row g-2 align-items-center">
                                     <div class="col-6">
-                                        <input name="quantity" type="number" min="1" max="{{ product['quantity'] }}" class="form-control" placeholder="Qty" required>
+                                        <input name="quantity" type="number" min="1" max="{{ product['quantity'] }}" class="form-control" placeholder="Quantity" required>
                                     </div>
                                     <div class="col-6">
                                         <button type="submit" class="btn btn-success w-100">Add to Cart</button>
@@ -92,8 +76,4 @@
         {%endif%}
     </div>
 
-    <footer class="bg-dark text-white text-center py-4">
-        <p class="mb-1">&copy; 2026 One Stop Shop. All rights reserved.</p>
-    </footer>
-</body>
-</html>
+{% endblock %}

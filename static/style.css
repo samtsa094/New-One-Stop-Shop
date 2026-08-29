@@ -48,6 +48,16 @@ footer {
     background: #ffffff;
 }
 
+@media (min-width: 1200px) {
+    .row.row-cols-xl-4 > .product-card,
+    .row.row-cols-xl-4 > .shop-card {
+        flex: 0 0 24.39% !important;
+        width: 24.39% !important;
+        max-width: 24.39% !important;
+        box-sizing: border-box;
+    }
+}
+
 .shop-card:hover,
 .product-card:hover {
     transform: translateY(-4px);

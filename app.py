@@ -62,6 +62,16 @@ def safe_int(value, default = 0):
     except (TypeError, ValueError):
         return default
 
+def parse_price_decimal128(value):
+    try:
+        decimal_value = Decimal(str(value)).quantize(Decimal("0.01"), rounding = ROUND_HALF_UP)
+        decimal128_value = Decimal128(decimal_value)
+        if decimal128_value.to_decimal() < Decimal("0"):
+            return None
+        return decimal128_value
+    except (TypeError, ValueError, InvalidOperation):
+        return None
+
 def is_valid_image_url(value):
     parsed = urlparse(value)
     return parsed.scheme in {"http", "https"} and bool(parsed.netloc)
@@ -210,14 +220,11 @@ def add_product():
         price = request.form.get("price", "").strip()
         quantity = safe_int(request.form.get("quantity"), 0)
         image_link = request.form.get("link", "").strip()
-        if not all([name, description, image_link]) or not is_valid_image_url(image_link):
+        if not all([name, description, image_link]):
             flash("Please provide product name, description, and image link.")
             return redirect("/owner_shop")
-        try:
-            price_value = Decimal(price).quantize(Decimal("0.01"), rounding = ROUND_HALF_UP)
-        except (InvalidOperation, ValueError):
-            price_value = None
-        if price_value is None or price_value.to_decimal() < 0:
+        price_value = parse_price_decimal128(price)
+        if price_value is None:
             flash("Price must be a positive number.")
             return redirect("/owner_shop")
         if quantity <= 0:
@@ -259,14 +266,11 @@ def edit_product(id):
         description = request.form.get("description", "").strip()
         price = request.form.get("price", "").strip()
         image_link = request.form.get("link", "").strip()
-        if not all([name, description, image_link]) or not is_valid_image_url(image_link):
+        if not all([name, description, image_link]):
             flash("Please provide a valid name, description, and image URL.")
             return render_template("edit_product.html", product = product)
-        try:
-            price_value = Decimal(price).quantize(Decimal("0.01"), rounding = ROUND_HALF_UP)
-            if price_value < 0:
-                raise InvalidOperation
-        except (InvalidOperation, ValueError):
+        price_value = parse_price_decimal128(price)
+        if price_value is None:
             flash("Price must be a positive number.")
             return render_template("edit_product.html", product = product)
         if len(name) > 100:
@@ -274,7 +278,7 @@ def edit_product(id):
             return render_template("edit_product.html", product = product)
         db.Products.update_one(
             {"_id": product["_id"], "email": session["email"]},
-            {"$set": {"name": name, "description": description, "price": Decimal128(price_value), "link": image_link}}
+            {"$set": {"name": name, "description": description, "price": price_value, "link": image_link}}
         )
         flash("Product updated successfully.")
         return redirect("/owner_shop")
@@ -470,5 +474,5 @@ def flash(message, category=None):
             category = "neutral"
     flask_flash(message, category)
 
-# if __name__ == "__main__":
-#     app.run(debug = True)
+if __name__ == "__main__":
+    app.run(debug = True)

@@ -483,5 +483,5 @@ def flash(message, category = None):
             category = "neutral"
     flask_flash(message, category)
 
-if __name__ == "__main__":
-    app.run(debug = True)
+# if __name__ == "__main__":
+#     app.run(debug = True)

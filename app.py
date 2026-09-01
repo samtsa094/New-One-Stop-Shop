@@ -7,7 +7,6 @@ from dotenv import load_dotenv
 import os
 import re
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
-from urllib.parse import urlparse
 
 load_dotenv()
 app = Flask(__name__)
@@ -19,12 +18,17 @@ db.Products.create_index([("name", "text"), ("description", "text")])
 
 def get_cart():
     if "user_id" not in session:
-        session["user_id"] = str(db.Carts.insert_one({"cart": []}).inserted_id)
+        return []
     cart = db.Carts.find_one({"_id": ObjectId(session["user_id"])})
     if cart is None:
+        session.pop("user_id", None)
+        return []
+    return cart.get("cart", [])
+
+def ensure_cart_for_new_item():
+    if "user_id" not in session:
         session["user_id"] = str(db.Carts.insert_one({"cart": []}).inserted_id)
-        cart = {"cart": []}
-    return cart["cart"]
+    return session["user_id"]
 
 def get_cart_count():
     return len(get_cart())
@@ -72,13 +76,8 @@ def parse_price_decimal128(value):
     except (TypeError, ValueError, InvalidOperation):
         return None
 
-def is_valid_image_url(value):
-    parsed = urlparse(value)
-    return parsed.scheme in {"http", "https"} and bool(parsed.netloc)
-
 @app.route("/", methods = ["GET", "POST"])
 def index():
-    session.setdefault("user_id", str(db.Carts.insert_one({"cart": []}).inserted_id))
     search_query = request.args.get("search", "").strip()
     shop_filter = request.args.get("shop", "").strip()
     query = {}
@@ -355,6 +354,8 @@ def add_to_cart(product_id, redirect_target):
         if stock_update.modified_count != 1:
             flash(f"Only {product['quantity']} {product['name']}(s) are available in stock.")
             return redirect(redirect_target)
+
+        cart_id = ensure_cart_for_new_item()
         cart = get_cart()
         found = False
         for item in cart:
@@ -364,7 +365,7 @@ def add_to_cart(product_id, redirect_target):
                 break
         if not found:
             cart.append({"product_id": str(product["_id"]), "name": product["name"], "quantity": quantity, "price": product["price"]})
-        db.Carts.update_one({"_id": ObjectId(session["user_id"])}, {"$set": {"cart": cart}})
+        db.Carts.update_one({"_id": ObjectId(cart_id)}, {"$set": {"cart": cart}})
         flash(f"Successfully added {quantity} {product['name']}(s) to your cart.")
     except Exception as e:
         print(f"Add to cart error: {e}")
@@ -436,6 +437,12 @@ def update_cart_quantity():
 
 @app.route("/view_cart", methods = ["GET", "POST"])
 def view_cart():
+    if "user_id" in session:
+        cart = get_cart()
+        if not cart:
+            db.Carts.delete_one({"_id": ObjectId(session["user_id"])})
+            session.pop("user_id", None)
+            session.pop("cart", None)
     cart = normalize_cart_prices(get_cart())
     total = sum(item["quantity"] * item["price"] for item in cart)
     return render_template("checkout.html", cart = cart, total = total)
@@ -446,9 +453,11 @@ def checkout():
         if "user_id" in session:
             cart = get_cart()
             if not cart:
+                db.Carts.delete_one({"_id": ObjectId(session["user_id"])})
+                session.pop("user_id", None)
+                session.pop("cart", None)
                 flash("Your cart is empty.")
                 return redirect("/view_cart")
-            db.Carts.delete_one({"_id": ObjectId(session["user_id"])})
             session.pop("user_id", None)
             session.pop("cart", None)
             flash("Thank you for shopping at One Stop Shop! Your order has been placed.")
@@ -457,7 +466,7 @@ def checkout():
         flash("An error occurred during checkout. Please try again.")
     return redirect("/")
 
-def flash(message, category=None):
+def flash(message, category = None):
     if category is None:
         text = str(message).lower()
         if any(word in text for word in (

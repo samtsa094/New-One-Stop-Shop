@@ -93,19 +93,19 @@ def index():
         shops = list(db.Shops.find().sort("shop_name", 1))
         shop_names = {shop["email"]: shop["shop_name"] for shop in shops}
         return render_template("index.html", 
-                             shops = shops, 
-                             products = products, 
-                             shop_names = shop_names,
-                             cart_count = get_cart_count(),
-                             search_query = search_query,
-                             shop_filter = shop_filter)
+                               shops = shops, 
+                               products = products, 
+                               shop_names = shop_names,
+                               cart_count = get_cart_count(),
+                               search_query = search_query,
+                               shop_filter = shop_filter)
     except Exception as e:
         print(f"Search error: {e}")
         return render_template("index.html", 
-                             shops = list(db.Shops.find().sort("shop_name", 1)), 
-                             products = normalize_products(list(db.Products.find().sort("name", 1))),
-                             shop_names = {},
-                             cart_count = get_cart_count())
+                               shops = list(db.Shops.find().sort("shop_name", 1)), 
+                               products = normalize_products(list(db.Products.find().sort("name", 1))),
+                               shop_names = {},
+                               cart_count = get_cart_count())
 
 @app.route("/register", methods = ["GET", "POST"])
 def register():
@@ -145,7 +145,9 @@ def owner_shop():
     if "email" not in session:
         flash("You must first login.")
         return redirect("/")
-    return render_template("owner_shop.html", products = normalize_products(list(db.Products.find({"email": session["email"]}).sort("name", 1))), name = session["name"])
+    return render_template("owner_shop.html", 
+                           products = normalize_products(list(db.Products.find({"email": session["email"]}).sort("name", 1))), 
+                           name = session["name"])
 
 @app.route("/shop_profile", methods = ["GET", "POST"])
 def shop_profile():
@@ -334,7 +336,11 @@ def view_shop(email):
     if not shop:
         flash("That shop could not be found.")
         return redirect("/")
-    return render_template("customer_shop.html", products = normalize_products(list(db.Products.find({"email": email}).sort("name", 1))), cart_count = get_cart_count(), email = email, shop = shop)
+    return render_template("customer_shop.html", 
+                           products = normalize_products(list(db.Products.find({"email": email}).sort("name", 1))), 
+                           cart_count = get_cart_count(), 
+                           email = email, 
+                           shop = shop)
 
 def add_to_cart(product_id, redirect_target):
     quantity = safe_int(request.form.get("quantity"), 0)
@@ -364,7 +370,10 @@ def add_to_cart(product_id, redirect_target):
                 found = True
                 break
         if not found:
-            cart.append({"product_id": str(product["_id"]), "name": product["name"], "quantity": quantity, "price": product["price"]})
+            cart.append({"product_id": str(product["_id"]), 
+                         "name": product["name"], 
+                         "quantity": quantity, 
+                         "price": product["price"]})
         db.Carts.update_one({"_id": ObjectId(cart_id)}, {"$set": {"cart": cart}})
         flash(f"Successfully added {quantity} {product['name']}(s) to your cart.")
     except Exception as e:
